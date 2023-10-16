@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x, y, z):
+    return z, -y
+
+def shooting_method_bisection(f, a, b, alpha, beta, N):
+    h = (b - a) / N
+    u = (beta - alpha) / (b - a)
+
+    def F(u):
+        x_values = np.linspace(a, b, N+1)
+        y = np.zeros(N+1)
+        z = np.zeros(N+1)
+        y[0] = alpha
+
+        for i in range(N):
+            z[i+1], y[i+1] = z[i] + h * f(x_values[i], y[i], z[i]), y[i] + h * z[i]
+
+        return y[-1] - beta
+
+    u_left = 0.0
+    u_right = u
+
+    while abs(u_right - u_left) > 1e-6:
+        u_mid = (u_left + u_right) / 2
+        if F(u_mid) * F(u_left) < 0:
+            u_right = u_mid
+        else:
+            u_left = u_mid
+
+    return u_mid
+
+# Example usage
+a = 0
+b = 1
+alpha = 0
+beta = 1
+N = 100
+
+u_bisection = shooting_method_bisection(f, a, b, alpha, beta, N)
+print("Estimated u (Bisection):", u_bisection)
